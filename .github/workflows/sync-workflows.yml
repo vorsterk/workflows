@@ -38,6 +38,7 @@ jobs:
             cd $repo
             git remote set-url origin https://x-access-token:${{ secrets.PAT }}@github.com/vorsterk/$repo.git
             git checkout -b sync-workflows-update
+            git pull origin dev
             cd ..
             mkdir -p temp-workflows
             cp -r .github/workflows/* temp-workflows/
