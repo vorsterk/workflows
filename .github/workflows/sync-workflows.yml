@@ -1,0 +1,53 @@
+name: Sync Workflows
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Central Workflows Repo
+        uses: actions/checkout@v2
+
+      - name: Set up Git
+        run: |
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+          git config --global credential.helper store
+
+      - name: Install GitHub CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y curl
+          curl -fsSL https://github.com/cli/cli/releases/download/v2.14.7/gh_2.14.7_linux_amd64.tar.gz -o ghcli.tar.gz
+          tar -xzf ghcli.tar.gz
+          sudo cp gh_2.14.7_linux_amd64/bin/gh /usr/local/bin/
+
+      - name: Sync Workflows to Other Repos
+        env:
+          REPOS: |
+            typology-processor
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+        run: |
+          for repo in $REPOS; do
+            git clone https://github.com/vorsterk/$repo.git
+            cd $repo
+            git remote set-url origin https://x-access-token:${{ secrets.PAT }}@github.com/vorsterk/$repo.git
+            git checkout -b sync-workflows-update
+            git pull origin dev
+            cd ..
+            mkdir -p temp-workflows
+            cp -r .github/workflows/* temp-workflows/
+            rm temp-workflows/sync-workflows.yml
+            cp -r temp-workflows/* $repo/.github/workflows/
+            cd $repo
+            git add .
+            git commit -m "Sync workflows from central-workflows"
+            git push origin sync-workflows-update
+            gh auth login --with-token <<< "${{ secrets.PAT }}"
+            gh pr create --title "Sync workflows from central-workflows" --body "This PR syncs workflows from the central-workflows repository." --base dev --head sync-workflows-update
+            cd ..
+          done
