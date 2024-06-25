@@ -19,6 +19,13 @@ jobs:
           git config --global user.email 'github-actions@github.com'
           git config --global credential.helper store
 
+      - name: Install GitHub CLI
+        run: |
+          sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key C99B11DEB97541F0
+          sudo apt-add-repository https://cli.github.com/packages
+          sudo apt update
+          sudo apt install gh
+
       - name: Sync Workflows to Other Repos
         env:
           REPOS: |
@@ -35,8 +42,11 @@ jobs:
             rm temp-workflows/sync-workflows.yml
             cp -r temp-workflows/* $repo/.github/workflows/
             cd $repo
+            git checkout -b sync-workflows-update
             git add .
             git commit -m "Sync workflows from central-workflows"
-            git push origin dev
+            git push origin sync-workflows-update
+            gh auth login --with-token <<< "${{ secrets.PAT }}"
+            gh pr create --title "Sync workflows from central-workflows" --body "This PR syncs workflows from the central-workflows repository." --base dev --head sync-workflows-update
             cd ..
           done
