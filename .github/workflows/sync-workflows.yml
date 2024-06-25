@@ -12,10 +12,13 @@ jobs:
     steps:
       - name: Checkout Central Workflows Repo
         uses: actions/checkout@v2
+
       - name: Set up Git
         run: |
           git config --global user.name 'github-actions'
           git config --global user.email 'github-actions@github.com'
+          git config --global credential.helper store
+
       - name: Sync Workflows to Other Repos
         env:
           REPOS: |
@@ -24,6 +27,9 @@ jobs:
         run: |
           for repo in $REPOS; do
             git clone https://github.com/vorsterk/$repo.git
+            cd $repo
+            git remote set-url origin https://x-access-token:${{ secrets.PAT }}@github.com/your-org/$repo.git
+            cd ..
             mkdir -p temp-workflows
             cp -r .github/workflows/* temp-workflows/
             rm temp-workflows/sync-workflows.yml
@@ -31,6 +37,6 @@ jobs:
             cd $repo
             git add .
             git commit -m "Sync workflows from central-workflows"
-            git push origin dev
+            git push origin main
             cd ..
           done
