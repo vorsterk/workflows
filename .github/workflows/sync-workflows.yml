@@ -25,7 +25,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.PAT }}
         run: |
           for repo in $REPOS; do
-            git clone https://github.com/your-org/$repo.git
+            git clone https://github.com/frmscoe/$repo.git
             mkdir -p temp-workflows
             cp -r .github/workflows/* temp-workflows/
             rm temp-workflows/sync-workflows.yml
