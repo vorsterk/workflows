@@ -21,10 +21,11 @@ jobs:
 
       - name: Install GitHub CLI
         run: |
-          sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key C99B11DEB97541F0
-          sudo apt-add-repository https://cli.github.com/packages
-          sudo apt update
-          sudo apt install gh
+          sudo apt-get update
+          sudo apt-get install -y curl
+          curl -fsSL https://github.com/cli/cli/releases/download/v2.14.7/gh_2.14.7_linux_amd64.tar.gz -o ghcli.tar.gz
+          tar -xzf ghcli.tar.gz
+          sudo cp gh_2.14.7_linux_amd64/bin/gh /usr/local/bin/
 
       - name: Sync Workflows to Other Repos
         env:
