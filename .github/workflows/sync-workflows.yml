@@ -1,0 +1,38 @@
+name: Sync Workflows
+
+on:
+  push:
+    paths:
+      - '.github/workflows/**'
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Central Workflows Repo
+        uses: actions/checkout@v2
+
+      - name: Set up Git
+        run: |
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+
+      - name: Sync Workflows to Other Repos
+        env:
+          REPOS: |
+            typology-processor
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+        run: |
+          for repo in $REPOS; do
+            git clone https://github.com/your-org/$repo.git
+            mkdir -p temp-workflows
+            cp -r .github/workflows/* temp-workflows/
+            rm temp-workflows/sync-workflows.yml
+            cp -r temp-workflows/* $repo/.github/workflows/
+            cd $repo
+            git add .
+            git commit -m "Sync workflows from central-workflows"
+            git push origin main
+            cd ..
+          done
