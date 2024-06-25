@@ -47,7 +47,7 @@ jobs:
             git add .
             git commit -m "Sync workflows from central-workflows"
             git push origin sync-workflows-update
-            gh auth login --with-token <<< "${{ secrets.PAT }}"
-            gh pr create --title "Sync workflows from central-workflows" --body "This PR syncs workflows from the central-workflows repository." --base dev --head sync-workflows-update
+            GITHUB_TOKEN="" gh auth login --with-token <<< "${{ secrets.PAT }}"
+            GITHUB_TOKEN="" gh pr create --title "Sync workflows from central-workflows" --body "This PR syncs workflows from the central-workflows repository." --base dev --head sync-workflows-update
             cd ..
           done
