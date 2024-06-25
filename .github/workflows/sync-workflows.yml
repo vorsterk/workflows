@@ -38,7 +38,7 @@ jobs:
             git clone https://github.com/vorsterk/$repo.git
             cd $repo
             git remote set-url origin https://x-access-token:${{ secrets.PAT }}@github.com/vorsterk/$repo.git
-            git checkout -b sync-workflows-update
+            git checkout -b sync-workflows-update2
             git pull --rebase origin dev
             cd ..
             mkdir -p temp-workflows
@@ -48,8 +48,8 @@ jobs:
             cd $repo
             git add .
             git commit -m "Sync workflows from central-workflows"
-            git push origin sync-workflows-update
+            git push origin sync-workflows-update2
             GITHUB_TOKEN="${{ secrets.PAT }}" gh auth login --with-token
-            GITHUB_TOKEN="${{ secrets.PAT }}" gh pr create --title "Sync workflows from central-workflows" --body "This PR syncs workflows from the central-workflows repository." --base dev --head sync-workflows-update
+            GITHUB_TOKEN="${{ secrets.PAT }}" gh pr create --title "Sync workflows from central-workflows" --body "This PR syncs workflows from the central-workflows repository." --base dev --head sync-workflows-update2
             cd ..
           done
