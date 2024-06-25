@@ -37,17 +37,17 @@ jobs:
             git clone https://github.com/vorsterk/$repo.git
             cd $repo
             git remote set-url origin https://x-access-token:${{ secrets.PAT }}@github.com/vorsterk/$repo.git
+            git checkout -b sync-workflows-update
             cd ..
             mkdir -p temp-workflows
             cp -r .github/workflows/* temp-workflows/
             rm temp-workflows/sync-workflows.yml
             cp -r temp-workflows/* $repo/.github/workflows/
             cd $repo
-            git checkout -b sync-workflows-update
             git add .
             git commit -m "Sync workflows from central-workflows"
             git push origin sync-workflows-update
-            GITHUB_TOKEN="" gh auth login --with-token <<< "${{ secrets.PAT }}"
-            GITHUB_TOKEN="" gh pr create --title "Sync workflows from central-workflows" --body "This PR syncs workflows from the central-workflows repository." --base dev --head sync-workflows-update
+            gh auth login --with-token <<< "${{ secrets.PAT }}"
+            gh pr create --title "Sync workflows from central-workflows" --body "This PR syncs workflows from the central-workflows repository." --base dev --head sync-workflows-update
             cd ..
           done
