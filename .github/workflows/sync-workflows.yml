@@ -33,6 +33,6 @@ jobs:
             cd $repo
             git add .
             git commit -m "Sync workflows from central-workflows"
-            git push origin main
+            git push origin dev
             cd ..
           done
