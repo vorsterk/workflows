@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
-#Test5
+#Test10
 name: Benchmark CI
 env:
   GITHUB_TOKEN: ${{ secrets.GH_WRITE_TOKEN }}
