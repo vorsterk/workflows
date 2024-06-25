@@ -12,12 +12,10 @@ jobs:
     steps:
       - name: Checkout Central Workflows Repo
         uses: actions/checkout@v2
-
       - name: Set up Git
         run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
       - name: Sync Workflows to Other Repos
         env:
           REPOS: |
