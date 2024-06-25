@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: Apache-2.0
+
+name: Conventional Commits
+
+on: [push]
+jobs:
+  commit-message-check:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Commit message check
+      run: |
+        if ! npx commitlint --from=$(git rev-parse HEAD~1) --to=$(git rev-parse HEAD); then
+          echo "Commit message check failed."
+          exit 1
+        fi

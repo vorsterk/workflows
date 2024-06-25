@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: Apache-2.0
+
+name: GPG Verify
+
+on: [push, pull_request]
+jobs:
+  gpg-verify:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Verify GPG signatures
+      run: |
+        if ! git verify-commit HEAD; then
+          echo "GPG signature verification failed."
+          exit 1
+        fi

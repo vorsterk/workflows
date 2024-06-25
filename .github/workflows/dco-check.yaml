@@ -1,0 +1,37 @@
+# SPDX-License-Identifier: Apache-2.0
+
+name: DCO
+
+on: [pull_request]
+jobs:
+  dco:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Check for DCO Sign-off
+      id: dco
+      run: |
+        # Check if all commits have a Signed-off-by line
+        commits=$(git log origin/main..HEAD --pretty=format:%H)
+        non_compliant_commits=""
+        for commit in $commits; do
+          if ! git show --quiet $commit | grep -q "Signed-off-by:"; then
+            non_compliant_commits="$non_compliant_commits $commit"
+          fi
+        done
+
+        if [ -n "$non_compliant_commits" ]; then
+          echo "The following commits do not have a Signed-off-by line:"
+          for commit in $non_compliant_commits; do
+            echo "- $commit"
+          done
+          exit 1
+        fi
+
+      shell: bash
+
+    - name: Set output
+      if: failure()
+      run: echo "::set-output name=result::failed"
