@@ -6,6 +6,7 @@ on:
 
 jobs:
   sync:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
     steps:
@@ -30,7 +31,6 @@ jobs:
         env:
           REPOS: |
             typology-processor
-          GITHUB_TOKEN: ${{ secrets.PAT }}
         run: |
           for repo in $REPOS; do
             git clone https://github.com/vorsterk/$repo.git
@@ -47,7 +47,7 @@ jobs:
             git add .
             git commit -m "Sync workflows from central-workflows"
             git push origin sync-workflows-update
-            gh auth login --with-token <<< "${{ secrets.PAT }}"
-            gh pr create --title "Sync workflows from central-workflows" --body "This PR syncs workflows from the central-workflows repository." --base dev --head sync-workflows-update
+            GITHUB_TOKEN="${{ secrets.PAT }}" gh auth login --with-token
+            GITHUB_TOKEN="${{ secrets.PAT }}" gh pr create --title "Sync workflows from central-workflows" --body "This PR syncs workflows from the central-workflows repository." --base dev --head sync-workflows-update
             cd ..
           done
