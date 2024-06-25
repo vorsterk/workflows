@@ -37,7 +37,7 @@ jobs:
             git clone https://github.com/vorsterk/$repo.git
             cd $repo
             git remote set-url origin https://x-access-token:${{ secrets.PAT }}@github.com/vorsterk/$repo.git
-            git checkout -b sync-workflows-update3
+            git checkout -b sync-workflows-update4
             git pull --rebase origin dev
             cd ..
             mkdir -p temp-workflows
@@ -47,13 +47,13 @@ jobs:
             cd $repo
             git add .
             git commit -m "Sync workflows from central-workflows"
-            git push origin sync-workflows-update3
+            git push origin sync-workflows-update4
             
-            # Use a temporary file for gh authentication
+            # Clear the GITHUB_TOKEN environment variable and use a temporary file for gh authentication
             echo "${{ secrets.PAT }}" > /tmp/gh_token
-            GITHUB_TOKEN_FILE=/tmp/gh_token
-            gh auth login --with-token < $GITHUB_TOKEN_FILE
-            gh pr create --title "Sync workflows from central-workflows" --body "This PR syncs workflows from the central-workflows repository." --base dev --head sync-workflows-update3
+            unset GITHUB_TOKEN
+            gh auth login --with-token < /tmp/gh_token
+            gh pr create --title "Sync workflows from central-workflows" --body "This PR syncs workflows from the central-workflows repository." --base dev --head sync-workflows-update4
             
             # Cleanup
             rm /tmp/gh_token
