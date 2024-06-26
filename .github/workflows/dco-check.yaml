@@ -14,7 +14,7 @@ jobs:
       id: dco
       run: |
         # Check if all commits have a Signed-off-by line
-        commits=$(git log origin/main..HEAD --pretty=format:%H)
+        commits=$(git log origin/dev..HEAD --pretty=format:%H)
         non_compliant_commits=""
         for commit in $commits; do
           if ! git show --quiet $commit | grep -q "Signed-off-by:"; then
