@@ -9,10 +9,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0  # Fetch all history for all branches
+
+    - name: Determine the default branch name
+      id: default_branch
+      run: |
+        default_branch=$(git remote show origin | grep 'HEAD branch' | cut -d' ' -f5)
+        echo "::set-output name=branch::$default_branch"
 
     - name: Check GPG verification status
       run: |
-        commits=$(git log --pretty=format:%H origin/main..HEAD)
+        default_branch=${{ steps.default_branch.outputs.branch }}
+        commits=$(git log --pretty=format:%H origin/$default_branch..HEAD)
         for commit in $commits; do
           status=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             https://api.github.com/repos/${{ github.repository }}/commits/$commit/status \
