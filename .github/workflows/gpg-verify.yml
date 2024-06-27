@@ -16,11 +16,11 @@ jobs:
       id: default_branch
       run: |
         default_branch=$(git remote show origin | grep 'HEAD branch' | cut -d' ' -f5)
-        echo "::set-output name=branch::$default_branch"
+        echo "default_branch=$default_branch" >> $GITHUB_ENV
 
     - name: Check GPG verification status
       run: |
-        default_branch=${{ steps.default_branch.outputs.branch }}
+        default_branch=${{ env.default_branch }}
         commits=$(git log --pretty=format:%H origin/$default_branch..HEAD)
         for commit in $commits; do
           status=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
@@ -31,3 +31,4 @@ jobs:
             exit 1
           fi
         done
+
