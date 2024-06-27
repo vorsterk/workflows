@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         fetch-depth: 0  # Fetch all history for all branches
 
@@ -27,7 +27,7 @@ jobs:
 
         # Check each commit for a Signed-off-by line
         for commit in $commits; do
-          if ! git show --quiet $commit | grep -q "Signed-off-by:"; then
+          if ! git show --quiet --format=%B $commit | grep -q "^Signed-off-by: "; then
             non_compliant_commits="$non_compliant_commits $commit"
           fi
         done
@@ -40,4 +40,3 @@ jobs:
           exit 1
         fi
       shell: bash
-
