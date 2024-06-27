@@ -3,14 +3,32 @@
 name: GPG Verify
 
 on: [push, pull_request]
+
 jobs:
   gpg-verify:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Verify GPG signatures
+      with:
+        fetch-depth: 0  # Fetch all history for all branches
+
+    - name: Determine the default branch name
+      id: default_branch
       run: |
-        if ! git verify-commit HEAD; then
-          echo "GPG signature verification failed."
-          exit 1
-        fi
+        default_branch=$(git remote show origin | grep 'HEAD branch' | cut -d' ' -f5)
+        echo "default_branch=$default_branch" >> $GITHUB_ENV
+
+    - name: Check GPG verification status
+      run: |
+        default_branch=${{ env.default_branch }}
+        commits=$(git log --pretty=format:%H origin/$default_branch..HEAD)
+        for commit in $commits; do
+          status=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            https://api.github.com/repos/${{ github.repository }}/commits/$commit/status \
+            | jq -r '.state')
+          if [[ "$status" != "success" ]]; then
+            echo "GPG signature verification failed for commit $commit."
+            exit 1
+          fi
+        done
+
