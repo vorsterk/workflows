@@ -8,7 +8,7 @@ jobs:
   gpg-verify:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         fetch-depth: 0  # Fetch all history for all branches
 
@@ -17,23 +17,27 @@ jobs:
       run: |
         default_branch=$(git remote show origin | grep 'HEAD branch' | cut -d' ' -f5)
         echo "default_branch=$default_branch" >> $GITHUB_ENV
-        
-    - name: Debug Task Types and Custom Labels
-      run: |
-        echo "Task Types: ${{ inputs.task_types }}"
-        echo "Custom Labels: ${{ inputs.custom_labels }}"
-        
+
     - name: Check GPG verification status
       run: |
         default_branch=${{ env.default_branch }}
         commits=$(git log --pretty=format:%H origin/$default_branch..HEAD)
         for commit in $commits; do
           status=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            https://api.github.com/repos/${{ github.repository }}/commits/$commit/status \
-            | jq -r '.state')
+            https://api.github.com/repos/${{ github.repository }}/commits/$commit/check-runs \
+            | jq -r '.check_runs[] | select(.name == "GPG verify") | .conclusion')
           if [[ "$status" != "success" ]]; then
             echo "GPG signature verification failed for commit $commit."
             exit 1
           fi
         done
-
+        
+    - name: Debug GPG verification status
+      run: |
+        default_branch=${{ env.default_branch }}
+        commits=$(git log --pretty=format:%H origin/$default_branch..HEAD)
+        for commit in $commits; do
+          curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            https://api.github.com/repos/${{ github.repository }}/commits/$commit/check-runs \
+            | jq .
+        done
