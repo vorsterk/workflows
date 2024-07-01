@@ -24,12 +24,14 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y curl
-          curl -fsSL https://github.com/cli/cli/releases/download/v2.14.7/gh_2.14.7_linux_amd64.tar.gz -o ghcli.tar.gz
+          curl -fsSL https://github.com/cli/cli/releases/download/v2.14.7/gh_2.14.7_linux_amd64.tar.gz -o ghcli.tar.gz 
           tar -xzf ghcli.tar.gz
           sudo cp gh_2.14.7_linux_amd64/bin/gh /usr/local/bin/
 
       - name: Get PR author details
         id: pr_author
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           PR_AUTHOR_NAME=$(gh api "repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}" --jq '.user.login')
           PR_AUTHOR_EMAIL=$(git log -1 --pretty=format:'%ae')
