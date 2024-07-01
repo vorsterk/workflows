@@ -24,4 +24,5 @@ jobs:
         run: |
           echo "Task Types: ${{ inputs.task_types }}"
           echo "Custom Labels: ${{ inputs.custom_labels }}"
+        
 

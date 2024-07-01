@@ -13,16 +13,9 @@ jobs:
       with:
         fetch-depth: 0  # Fetch all history for all branches
 
-    - name: Determine the default branch name
-      id: default_branch
-      run: |
-        default_branch=$(git remote show origin | grep 'HEAD branch' | cut -d' ' -f5)
-        echo "default_branch=$default_branch" >> $GITHUB_ENV
-
     - name: Check for DCO Sign-off
       run: |
-        default_branch=${{ env.default_branch }}
-        commits=$(git rev-list origin/$default_branch..HEAD)
+        commits=$(git log --pretty=format:%H origin/${{ github.event.pull_request.head.ref }}..origin/${{ github.event.pull_request.base.ref }})
         non_compliant_commits=""
 
         # Check each commit for a Signed-off-by line
