@@ -8,7 +8,7 @@ jobs:
   gpg-verify:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         fetch-depth: 0  # Fetch all history for all branches
 
@@ -23,13 +23,4 @@ jobs:
             echo "GPG signature verification failed for commit $commit."
             exit 1
           fi
-        done
-
-    - name: Debug GPG verification status
-      run: |
-        commits=$(git log --pretty=format:%H origin/${{ github.event.pull_request.head.ref }}..origin/${{ github.event.pull_request.base.ref }})
-        for commit in $commits; do
-          curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            https://api.github.com/repos/${{ github.repository }}/commits/$commit/check-runs \
-            | jq .
         done
