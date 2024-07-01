@@ -31,8 +31,12 @@ jobs:
       - name: Get PR author details
         id: pr_author
         run: |
-          echo "PR_AUTHOR_NAME=$(jq -r .pull_request.user.login < ${GITHUB_EVENT_PATH})" >> $GITHUB_ENV
-          echo "PR_AUTHOR_EMAIL=$(gh api users/${{ env.PR_AUTHOR_NAME }} --jq '.email')" >> $GITHUB_ENV
+          PR_AUTHOR_NAME=$(gh api "repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}" --jq '.user.login')
+          PR_AUTHOR_EMAIL=$(git log -1 --pretty=format:'%ae')
+          PR_AUTHOR_NAME_FULL=$(git log -1 --pretty=format:'%an')
+          echo "PR_AUTHOR_NAME=${PR_AUTHOR_NAME}" >> $GITHUB_ENV
+          echo "PR_AUTHOR_EMAIL=${PR_AUTHOR_EMAIL}" >> $GITHUB_ENV
+          echo "PR_AUTHOR_NAME_FULL=${PR_AUTHOR_NAME_FULL}" >> $GITHUB_ENV
 
       - name: Sync Workflows to Other Repos
         env:
@@ -40,7 +44,7 @@ jobs:
             typology-processor
           GITHUB_TOKEN: ${{ secrets.PAT }}
         run: |
-          SIGNED_OFF_BY="Signed-off-by: ${{ env.PR_AUTHOR_NAME }} <${{ env.PR_AUTHOR_EMAIL }}>"
+          SIGNED_OFF_BY="Signed-off-by: ${{ env.PR_AUTHOR_NAME_FULL }} <${{ env.PR_AUTHOR_EMAIL }}>"
           for repo in $REPOS; do
             git clone https://github.com/vorsterk/$repo.git
             cd $repo
@@ -54,7 +58,7 @@ jobs:
             cp -r temp-workflows/* $repo/.github/workflows/
             cd $repo
             git add .
-            git commit -m "chore: sync workflows from central-workflows \n\n${SIGNED_OFF_BY}"
+            git commit -m "chore: sync workflows from central-workflows\n\n${SIGNED_OFF_BY}"
             git push origin sync-workflows-update
             
             # Clear the GITHUB_TOKEN environment variable and use a temporary file for gh authentication
