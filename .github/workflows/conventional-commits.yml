@@ -11,11 +11,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: PR Conventional Commit Validation
         uses: ytanikin/PRConventionalCommits@1.1.0
         with:
-          task_types: '["feat","fix","docs","test","ci","refactor","perf","chore","revert"]'
-          custom_labels: '{"feat": "enhancement", "fix": "bug", "docs": "documentation", "test": "test", "ci": "CI/CD", "refactor": "refactor", "perf": "performance", "chore": "chore", "revert": "revert", "wip": "WIP"}'
+          task_types: '["feat","fix","docs","test","ci","refactor","perf","chore","revert","BREAKING CHANGE"]'
+          custom_labels: '{"feat": "enhancement", "fix": "bug", "docs": "documentation", "test": "test", "ci": "CI/CD", "refactor": "refactor", "perf": "performance", "chore": "chore", "revert": "revert", "wip": "WIP", "BREAKING CHANGE": "BREAKING CHANGE"}'
           token: ${{ secrets.PAT }}
