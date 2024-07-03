@@ -3,8 +3,9 @@
 name: Sync Workflows
 
 on:
-  pull_request:
-    types: [closed]
+  push:
+    paths:
+      - '.github/workflows/**'
 
 jobs:
   sync:
