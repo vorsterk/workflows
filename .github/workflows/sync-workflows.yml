@@ -57,6 +57,7 @@ jobs:
             mkdir -p temp-workflows
             cp -r .github/workflows/* temp-workflows/
             rm temp-workflows/sync-workflows.yml
+            mkdir -p $repo/.github/workflows  # Create the workflows directory if it does not exist
             cp -r temp-workflows/* $repo/.github/workflows/
             cd $repo
             git add .
