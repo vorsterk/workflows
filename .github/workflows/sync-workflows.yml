@@ -43,8 +43,7 @@ jobs:
       - name: Sync Workflows to Other Repos
         env:
           REPOS: |
-            typology-processor
-            channel-router-setup-processor
+            batch-ppa
           GITHUB_TOKEN: ${{ secrets.PAT }}
         run: |
           SIGNED_OFF_BY="Signed-off-by: ${{ env.PR_AUTHOR_NAME_FULL }} <${{ env.PR_AUTHOR_EMAIL }}>"
@@ -61,7 +60,7 @@ jobs:
             cp -r temp-workflows/* $repo/.github/workflows/
             cd $repo
             git add .
-            git commit -m "ci: sync workflows from central-workflows. ${SIGNED_OFF_BY}"
+            git commit -m "ci: sync workflows from central-workflows ${SIGNED_OFF_BY}"
             git push origin sync-workflows-update
             
             # Clear the GITHUB_TOKEN environment variable and use a temporary file for gh authentication
