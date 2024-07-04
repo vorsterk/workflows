@@ -39,11 +39,12 @@ jobs:
           echo "PR_AUTHOR_NAME=${PR_AUTHOR_NAME}" >> $GITHUB_ENV
           echo "PR_AUTHOR_EMAIL=${PR_AUTHOR_EMAIL}" >> $GITHUB_ENV
           echo "PR_AUTHOR_NAME_FULL=${PR_AUTHOR_NAME_FULL}" >> $GITHUB_ENV
-
+          
       - name: Sync Workflows to Other Repos
         env:
           REPOS: |
             typology-processor
+            channel-router-setup-processor
           GITHUB_TOKEN: ${{ secrets.PAT }}
         run: |
           SIGNED_OFF_BY="Signed-off-by: ${{ env.PR_AUTHOR_NAME_FULL }} <${{ env.PR_AUTHOR_EMAIL }}>"
