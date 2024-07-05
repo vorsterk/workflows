@@ -47,7 +47,7 @@ jobs:
             $API_URL/repos/${{ github.repository }}/milestones/$MILESTONE_NUMBER
             
       - name: Trigger Release Workflow
-        uses: peter-evans/repository-dispatch@v1
+        uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ github.repository }}
