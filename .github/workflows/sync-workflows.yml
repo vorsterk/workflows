@@ -43,7 +43,7 @@ jobs:
       - name: Sync Workflows to Other Repos
         env:
           REPOS: |
-            batch-ppa
+            typology-processor
           GITHUB_TOKEN: ${{ secrets.PAT }}
         run: |
           SIGNED_OFF_BY="Signed-off-by: ${{ env.PR_AUTHOR_NAME_FULL }} <${{ env.PR_AUTHOR_EMAIL }}>"
